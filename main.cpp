@@ -1,26 +1,42 @@
-#include "DHT.h"
+#include <LiquidCrystal.h>
+#include <DHT.h>
+#define DHTPIN 2     
+#define DHTTYPE DHT11  
+
 DHT dht(DHTPIN, DHTTYPE);
 
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
+
 void setup() {
-  Serial.begin(9600);
+  lcd.begin(16, 2);
   dht.begin();
-  Serial.println("Data Logger Started");
-  Serial.println("Time(s)\tTemperature(C)\tHumidity(%)");
+
+  lcd.setCursor(0, 0);
+  lcd.print("Pokretanje...");
+  delay(2000);
+  lcd.clear();
 }
 
 void loop() {
-  // read temperature and humidity
-  float temp = dht.readTemperature(); // Celsius
+  float temp = dht.readTemperature();
   float hum = dht.readHumidity();
+
   if (isnan(temp) || isnan(hum)) {
-    Serial.println("Failed to read from DHT sensor!");
-  } else {
-    unsigned long timeSec = millis() / 1000; // seconds since start
-    Serial.print(timeSec);
-    Serial.print("\t");
-    Serial.print(temp, 1);
-    Serial.print("\t");
-    Serial.println(hum, 1);
+    lcd.setCursor(0, 0);
+    lcd.print("Greska senzora!");
+    return;
   }
+
+  lcd.setCursor(0, 0);
+  lcd.print("Temp: ");
+  lcd.print(temp);
+  lcd.print((char)223);
+  lcd.print("C   ");
+
+  lcd.setCursor(0, 1);
+  lcd.print("Vlaznost: ");
+  lcd.print(hum);
+  lcd.print("%   ");
+
   delay(2000);
 }
